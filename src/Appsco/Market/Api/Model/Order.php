@@ -2,79 +2,120 @@
 
 namespace Appsco\Market\Api\Model;
 
-class Order 
+use BWC\Component\Jwe\Jwt;
+
+class Order extends Jwt
 {
     const DURATION_UNIT_DAY = 'day';
     const DURATION_UNIT_MONTH = 'month';
 
+    const CLAIM_PACKAGE_ID = 'package_id';
+    const CLAIM_APP_ID = 'app_id';
+    const CLAIM_APP_TITLE = 'app_title';
+    const CLAIM_APP_URL = 'app_url';
+    const CLAIM_APP_ICON = 'app_icon';
+    const CLAIM_ONETIME_PRICE = 'onetime_price';
+    const CLAIM_RECURRING_PRICE = 'recurring_price';
+    const CLAIM_HAS_TRIAL = 'has_trial';
+    const CLAIM_TRIAL_DURATION = 'trial_duration';
+    const CLAIM_TRIAL_DURATION_UNIT = 'trial_duration_unit';
+    const CLAIM_FIRST_BILLING_DATE = 'first_billing_date';
+    const CLAIM_BILLING_DAY_OF_MONTH = 'billing_day_of_month';
+    const CLAIM_DESCRIPTION = 'description';
+
+
+    /**
+     * @var array
+     */
     private static $validDurationUnits = array(self::DURATION_UNIT_DAY, self::DURATION_UNIT_MONTH);
-
-
-    /** @var  int */
-    protected $packageId;
-
-    /** @var  AbstractApplication */
-    protected $application;
-
-    /** @var  int */
-    protected $oneTimePrice;
-
-    /** @var  int */
-    protected $recurringPrice;
-
-    /** @var  int */
-    protected $trialDuration;
-
-    /** @var  string */
-    protected $trialDurationUnit;
-
-    /** @var  \DateTime|null */
-    protected $firstBillingDate;
-
-    /** @var  int|null */
-    protected $billingDayOfMonth;
-
-    /** @var  string */
-    protected $description;
 
 
     /**
      * @param int $packageId
-     * @param AbstractApplication $application
+     * @return Order
      */
-    public function __construct($packageId, AbstractApplication $application)
+    public static function create($packageId)
     {
-        $this->packageId = $packageId;
-        $this->application = $application;
+        return new Order(array(), array(self::CLAIM_PACKAGE_ID => intval($packageId)));
     }
 
 
     /**
-     * @param \Appsco\Market\Api\Model\AbstractApplication $application
+     * @param string $value
      * @return $this|Order
      */
-    public function setApplication(AbstractApplication $application)
+    public function setAppIcon($value)
     {
-        $this->application = $application;
-        return $this;
+        return $this->set(self::CLAIM_APP_ICON, $value);
     }
 
     /**
-     * @return \Appsco\Market\Api\Model\AbstractApplication
+     * @return string|null
      */
-    public function getApplication()
+    public function getAppIcon()
     {
-        return $this->application;
+        return $this->get(self::CLAIM_APP_ICON);
     }
 
     /**
-     * @param int|null $billingDayOfMonth
+     * @param int $value
      * @return $this|Order
      */
-    public function setBillingDayOfMonth($billingDayOfMonth)
+    public function setAppId($value)
     {
-        $this->billingDayOfMonth = intval($billingDayOfMonth);
-        return $this;
+        return $this->set(self::CLAIM_APP_ID, $value);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getAppId()
+    {
+        return $this->get(self::CLAIM_APP_ID);
+    }
+
+    /**
+     * @param string $value
+     * @return $this|Order
+     */
+    public function setAppTitle($value)
+    {
+        return $this->set(self::CLAIM_APP_TITLE, $value);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAppTitle()
+    {
+        return $this->get(self::CLAIM_APP_TITLE);
+    }
+
+    /**
+     * @param string $value
+     * @return $this|Order
+     */
+    public function setAppUrl($value)
+    {
+        return $this->set(self::CLAIM_APP_URL, $value);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAppUrl()
+    {
+        return $this->get(self::CLAIM_APP_URL);
+    }
+
+
+    /**
+     * @param int $value
+     * @return $this|Order
+     */
+    public function setBillingDayOfMonth($value)
+    {
+        return $this->set(self::CLAIM_BILLING_DAY_OF_MONTH, intval($value));
     }
 
     /**
@@ -82,35 +123,33 @@ class Order
      */
     public function getBillingDayOfMonth()
     {
-        return $this->billingDayOfMonth;
+        return $this->get(self::CLAIM_BILLING_DAY_OF_MONTH);
     }
 
     /**
-     * @param string $description
+     * @param string $value
      * @return $this|Order
      */
-    public function setDescription($description)
+    public function setDescription($value)
     {
-        $this->description = trim($description);
-        return $this;
+        return $this->set(self::CLAIM_DESCRIPTION, trim($value));
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
-        return $this->description;
+        return $this->get(self::CLAIM_DESCRIPTION);
     }
 
     /**
-     * @param \DateTime|null $firstBillingDate
+     * @param \DateTime|null $value
      * @return $this|Order
      */
-    public function setFirstBillingDate(\DateTime $firstBillingDate = null)
+    public function setFirstBillingDate(\DateTime $value = null)
     {
-        $this->firstBillingDate = $firstBillingDate;
-        return $this;
+        return $this->set(self::CLAIM_FIRST_BILLING_DATE, $value ? $value->format('Y-m-d') : null);
     }
 
     /**
@@ -118,25 +157,29 @@ class Order
      */
     public function getFirstBillingDate()
     {
-        return $this->firstBillingDate;
+        $result = $this->get(self::CLAIM_FIRST_BILLING_DATE);
+        if ($result) {
+            $result = new \DateTime($result);
+        }
+
+        return $result;
     }
 
     /**
-     * @param int $oneTimePrice
+     * @param int $value
      * @return $this|Order
      */
-    public function setOneTimePrice($oneTimePrice)
+    public function setOneTimePrice($value)
     {
-        $this->oneTimePrice = intval($oneTimePrice);
-        return $this;
+        return $this->set(self::CLAIM_ONETIME_PRICE, intval($value));
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getOneTimePrice()
     {
-        return $this->oneTimePrice;
+        return $this->get(self::CLAIM_ONETIME_PRICE);
     }
 
     /**
@@ -145,8 +188,7 @@ class Order
      */
     public function setPackageId($packageId)
     {
-        $this->packageId = intval($packageId);
-        return $this;
+        return $this->set(self::CLAIM_PACKAGE_ID, intval($packageId));
     }
 
     /**
@@ -154,57 +196,55 @@ class Order
      */
     public function getPackageId()
     {
-        return $this->packageId;
+        return $this->get(self::CLAIM_PACKAGE_ID);
     }
 
     /**
-     * @param int $recurringPrice
+     * @param int $value
      * @return $this|Order
      */
-    public function setRecurringPrice($recurringPrice)
+    public function setRecurringPrice($value)
     {
-        $this->recurringPrice = intval($recurringPrice);
-        return $this;
+        return $this->set(self::CLAIM_RECURRING_PRICE, intval($value));
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getRecurringPrice()
     {
-        return $this->recurringPrice;
+        return $this->get(self::CLAIM_RECURRING_PRICE);
     }
 
     /**
-     * @param int $trialPeriodDuration
+     * @param int $value
      * @return $this|Order
      */
-    public function setTrialPeriodDuration($trialPeriodDuration)
+    public function setTrialDuration($value)
     {
-        $this->trialDuration = intval($trialPeriodDuration);
-        return $this;
+        return $this->set(self::CLAIM_TRIAL_DURATION, intval($value));
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getTrialPeriodDuration()
+    public function getTrialDuration()
     {
-        return $this->trialDuration;
+        return $this->get(self::CLAIM_TRIAL_DURATION);
     }
 
     /**
-     * @param string $trialPeriodDurationUnit
+     * @param string $value
      * @throws \InvalidArgumentException
      * @return $this|Order
      */
-    public function setTrialDurationUnit($trialPeriodDurationUnit)
+    public function setTrialDurationUnit($value)
     {
-        if (false == in_array($trialPeriodDurationUnit, self::$validDurationUnits)) {
-            throw new \InvalidArgumentException(sprintf("Invalid trial period duration unit '%s'", $trialPeriodDurationUnit));
+        if (false == in_array($value, self::$validDurationUnits)) {
+            throw new \InvalidArgumentException(sprintf("Invalid trial period duration unit '%s'", $value));
         }
 
-        $this->trialDurationUnit = $trialPeriodDurationUnit;
+        $this->set(self::CLAIM_TRIAL_DURATION_UNIT, $value);
 
         return $this;
     }
@@ -214,46 +254,8 @@ class Order
      */
     public function getTrialDurationUnit()
     {
-        return $this->trialDurationUnit;
+        return $this->get(self::CLAIM_TRIAL_DURATION_UNIT);
     }
 
-
-
-    /**
-     * @return array
-     */
-    public function getJwtPayload()
-    {
-        $result = array_merge(
-            array(
-                'package_id' => $this->packageId
-            ),
-            $this->application->getJwtPayload()
-        );
-
-        if ($this->oneTimePrice) {
-            $result['ot_price'] = $this->oneTimePrice;
-        }
-        if ($this->recurringPrice) {
-            $result['r_price'] = $this->recurringPrice;
-        }
-        if ($this->trialDuration) {
-            $result['trial_duration'] = $this->trialDuration;
-        }
-        if ($this->trialDurationUnit) {
-            $result['trial_unit'] = $this->trialDurationUnit;
-        }
-        if ($this->firstBillingDate) {
-            $result['first_billing_date'] = $this->firstBillingDate->format('Y-m-d');
-        }
-        if ($this->billingDayOfMonth) {
-            $result['billing_day_of_month'] = $this->billingDayOfMonth;
-        }
-        if ($this->description) {
-            $result['desc'] = $this->description;
-        }
-
-        return $result;
-    }
 
 }

@@ -6,6 +6,7 @@ use Appsco\Market\Api\Model\Order;
 use BWC\Component\Jwe\Algorithm;
 use BWC\Component\Jwe\Encoder;
 use BWC\Component\Jwe\Jwt;
+use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class MarketClient
@@ -67,23 +68,19 @@ class MarketClient
      */
     public function makeOrder(Order $order)
     {
-        $jwt = $this->getOrderJwt($order);
-        $token = $this->getJwtToken($jwt);
+        $this->timestampJwt($order);
+        $token = $this->getJwtToken($order);
         return $this->getRedirectResponse($token);
     }
 
     /**
      * @param Order $order
-     * @return Jwt
      */
-    public function getOrderJwt(Order $order)
+    public function timestampJwt(Order $order)
     {
-        $jwt = new Jwt(array(), $order->getJwtPayload());
-        $jwt->setIssuer($this->issuer);
-        $jwt->setIssuedAt(time());
-        $jwt->setJwtId(sha1(uniqid(mt_rand(), true)));
-
-        return $jwt;
+        $order->setIssuer($this->issuer);
+        $order->setIssuedAt(time());
+        $order->setJwtId(sha1(uniqid(mt_rand(), true)));
     }
 
 
@@ -104,4 +101,5 @@ class MarketClient
     {
         return new RedirectResponse(sprintf("%s?jwt=%s", $this->targetUrl, $token));
     }
+
 }

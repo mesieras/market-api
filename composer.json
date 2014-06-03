@@ -11,6 +11,7 @@
     }, 
     "require": {
         "appsco/component-jwe": "*",
-        "appsco/accounts-api": "*"
+        "appsco/accounts-api": "*",
+        "jms/serializer": "*"
     }
 }

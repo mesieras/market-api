@@ -3,24 +3,31 @@
 namespace tests;
 
 use Appsco\Market\Api\MarketClient;
-use Appsco\Market\Api\Model\ExistingApplication;
-use Appsco\Market\Api\Model\NewApplication;
 use Appsco\Market\Api\Model\Order;
 use BWC\Component\Jwe\Encoder;
-use BWC\Component\Jwe\Jwt;
 
 class MarketClientTest extends \PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader(function($class) {
+            return class_exists($class);
+        });
+    }
+
     public function testMakeOrderJwtWithExistingApplication()
     {
-        $order = new Order($expectedPackageId = 123, new ExistingApplication($expectedApplicationId = 456));
-        $order->setOneTimePrice($expectedOneTimePrice = 100);
-        $order->setRecurringPrice($expectedRecurringPrice = 200);
-        $order->setTrialPeriodDuration($expectedTrialDuration = 3);
-        $order->setTrialDurationUnit($expectedTrialDurationUnit = Order::DURATION_UNIT_MONTH);
-        $order->setFirstBillingDate($expectedFirstBillingDate = new \DateTime('now +1 day'));
-        $order->setBillingDayOfMonth($expectedBillingDayOfMonth = 15);
-        $order->setDescription($expectedDescription = 'description');
+        $order = Order::create($expectedPackageId = 123);
+        $order
+            ->setAppId($expectedApplicationId = 456)
+            ->setOneTimePrice($expectedOneTimePrice = 100)
+            ->setRecurringPrice($expectedRecurringPrice = 200)
+            ->setTrialDuration($expectedTrialDuration = 3)
+            ->setTrialDurationUnit($expectedTrialDurationUnit = Order::DURATION_UNIT_MONTH)
+            ->setFirstBillingDate($expectedFirstBillingDate = new \DateTime('now +1 day'))
+            ->setBillingDayOfMonth($expectedBillingDayOfMonth = 15)
+            ->setDescription($expectedDescription = 'description')
+        ;
 
         $client = new MarketClient(
             $encoder = new Encoder(),
@@ -45,23 +52,26 @@ class MarketClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($jwt);
 
-        /** @var Jwt $jwt */
-        $jwt = $encoder->decode($jwt);
+        /** @var Order $jwt */
+        $jwt = $encoder->decode($jwt, 'Appsco\Market\Api\Model\Order');
 
         $this->assertNotEmpty($jwt->getJwtId());
         $this->assertEquals($expectedIssuer, $jwt->getIssuer());
         $this->assertGreaterThanOrEqual(0, time() - $jwt->getIssuedAt());
-        $this->assertEmpty($jwt->get('app_url'));
-        $this->assertEmpty($jwt->get('app_title'));
-        $this->assertEmpty($jwt->get('app_icon'));
-        $this->assertEquals($expectedApplicationId, $jwt->get('app_id'));
-        $this->assertEquals($expectedOneTimePrice, $jwt->get('ot_price'));
-        $this->assertEquals($expectedRecurringPrice, $jwt->get('r_price'));
-        $this->assertEquals($expectedTrialDuration, $jwt->get('trial_duration'));
-        $this->assertEquals($expectedTrialDurationUnit, $jwt->get('trial_unit'));
-        $this->assertEquals($expectedFirstBillingDate->format('Y-m-d'), $jwt->get('first_billing_date'));
-        $this->assertEquals($expectedBillingDayOfMonth, $jwt->get('billing_day_of_month'));
-        $this->assertEquals($expectedDescription, $jwt->get('desc'));
+
+        $this->assertInstanceOf('Appsco\Market\Api\Model\Order', $jwt);
+
+        $this->assertEquals($expectedPackageId, $jwt->getPackageId());
+
+        $this->assertEquals($expectedApplicationId, $order->getAppId());
+
+        $this->assertEquals($expectedOneTimePrice, $order->getOneTimePrice());
+        $this->assertEquals($expectedRecurringPrice, $order->getRecurringPrice());
+        $this->assertEquals($expectedTrialDuration, $order->getTrialDuration());
+        $this->assertEquals($expectedTrialDurationUnit, $order->getTrialDurationUnit());
+        $this->assertEquals($expectedFirstBillingDate->setTime(0, 0, 0), $order->getFirstBillingDate());
+        $this->assertEquals($expectedBillingDayOfMonth, $order->getBillingDayOfMonth());
+        $this->assertEquals($expectedDescription, $order->getDescription());
 
         $encoder->verify($jwt, 'file://'.__DIR__.'/key.crt');
     }
@@ -70,23 +80,19 @@ class MarketClientTest extends \PHPUnit_Framework_TestCase
 
     public function testNewApp()
     {
-        $order = new Order($expectedPackageId = 123, new NewApplication(
-            $expectedUrl = 'http://example.com',
-            $expectedTitle = 'example application',
-            $expectedIcon = 'http://example.com/icon.png'
-        ));
+        $order = Order::create(0);
+        $order
+            ->setPackageId($expectedPackageId = 123)
+            ->setAppUrl($expectedUrl = 'http://example.com')
+            ->setAppTitle($expectedTitle = 'example application')
+            ->setAppIcon($expectedIcon = 'http://example.com/icon.png')
+        ;
 
-        $payload = $order->getJwtPayload();
 
-        $this->assertArrayNotHasKey('app_id', $payload);
-        $this->assertArrayHasKey('app_url', $payload);
-        $this->assertArrayHasKey('app_title', $payload);
-        $this->assertArrayHasKey('app_icon', $payload);
-
-        $this->assertEquals($expectedPackageId, $payload['package_id']);
-        $this->assertEquals($expectedUrl, $payload['app_url']);
-        $this->assertEquals($expectedTitle, $payload['app_title']);
-        $this->assertEquals($expectedIcon, $payload['app_icon']);
+        $this->assertEquals($expectedPackageId, $order->getPackageId());
+        $this->assertEquals($expectedUrl, $order->getAppUrl());
+        $this->assertEquals($expectedTitle, $order->getAppTitle());
+        $this->assertEquals($expectedIcon, $order->getAppIcon());
     }
 
 } 
