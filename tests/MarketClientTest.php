@@ -16,7 +16,10 @@ class MarketClientTest extends \PHPUnit_Framework_TestCase
         $order = new Order($expectedPackageId = 123, new ExistingApplication($expectedApplicationId = 456));
         $order->setOneTimePrice($expectedOneTimePrice = 100);
         $order->setRecurringPrice($expectedRecurringPrice = 200);
-        $order->setTrialMonths($expectedTrial = 3);
+        $order->setTrialPeriodDuration($expectedTrialDuration = 3);
+        $order->setTrialDurationUnit($expectedTrialDurationUnit = Order::DURATION_UNIT_MONTH);
+        $order->setFirstBillingDate($expectedFirstBillingDate = new \DateTime('now +1 day'));
+        $order->setBillingDayOfMonth($expectedBillingDayOfMonth = 15);
         $order->setDescription($expectedDescription = 'description');
 
         $client = new MarketClient(
@@ -54,7 +57,10 @@ class MarketClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedApplicationId, $jwt->get('app_id'));
         $this->assertEquals($expectedOneTimePrice, $jwt->get('ot_price'));
         $this->assertEquals($expectedRecurringPrice, $jwt->get('r_price'));
-        $this->assertEquals($expectedTrial, $jwt->get('trial'));
+        $this->assertEquals($expectedTrialDuration, $jwt->get('trial_duration'));
+        $this->assertEquals($expectedTrialDurationUnit, $jwt->get('trial_unit'));
+        $this->assertEquals($expectedFirstBillingDate->format('Y-m-d'), $jwt->get('first_billing_date'));
+        $this->assertEquals($expectedBillingDayOfMonth, $jwt->get('billing_day_of_month'));
         $this->assertEquals($expectedDescription, $jwt->get('desc'));
 
         $encoder->verify($jwt, 'file://'.__DIR__.'/key.crt');
