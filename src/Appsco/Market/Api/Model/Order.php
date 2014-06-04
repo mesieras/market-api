@@ -234,6 +234,23 @@ class Order extends Jwt
     }
 
     /**
+     * @param bool $value
+     * @return $this|Order
+     */
+    public function setHasTrial($value)
+    {
+        return $this->set(self::CLAIM_HAS_TRIAL, (bool)$value);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHasTrial()
+    {
+        return (bool)$this->get(self::CLAIM_HAS_TRIAL);
+    }
+
+    /**
      * @param string $value
      * @throws \InvalidArgumentException
      * @return $this|Order
