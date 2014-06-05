@@ -239,7 +239,10 @@ class Order extends Jwt
      */
     public function setHasTrial($value)
     {
-        return $this->set(self::CLAIM_HAS_TRIAL, (bool)$value);
+        if ($value !== null) {
+            $value = (bool)$value;
+        }
+        return $this->set(self::CLAIM_HAS_TRIAL, $value);
     }
 
     /**
