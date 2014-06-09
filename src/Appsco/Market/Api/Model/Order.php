@@ -232,7 +232,7 @@ class Order extends Jwt
      */
     public function getHasTrial()
     {
-        return (bool)$this->get(self::CLAIM_HAS_TRIAL);
+        return $this->get(self::CLAIM_HAS_TRIAL);
     }
 
     /**
