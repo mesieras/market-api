@@ -14,14 +14,13 @@ class Order extends Jwt
     const CLAIM_APP_TITLE = 'app_title';
     const CLAIM_APP_URL = 'app_url';
     const CLAIM_APP_ICON = 'app_icon';
-    const CLAIM_ONETIME_PRICE = 'onetime_price';
-    const CLAIM_RECURRING_PRICE = 'recurring_price';
+    const CLAIM_PRICE = 'price';
+    const CLAIM_DESCRIPTION = 'description';
     const CLAIM_HAS_TRIAL = 'has_trial';
     const CLAIM_TRIAL_DURATION = 'trial_duration';
     const CLAIM_TRIAL_DURATION_UNIT = 'trial_duration_unit';
     const CLAIM_FIRST_BILLING_DATE = 'first_billing_date';
     const CLAIM_BILLING_DAY_OF_MONTH = 'billing_day_of_month';
-    const CLAIM_DESCRIPTION = 'description';
 
 
     /**
@@ -169,17 +168,17 @@ class Order extends Jwt
      * @param int $value
      * @return $this|Order
      */
-    public function setOneTimePrice($value)
+    public function setPrice($value)
     {
-        return $this->set(self::CLAIM_ONETIME_PRICE, intval($value));
+        return $this->set(self::CLAIM_PRICE, intval($value));
     }
 
     /**
      * @return int|null
      */
-    public function getOneTimePrice()
+    public function getPrice()
     {
-        return $this->get(self::CLAIM_ONETIME_PRICE);
+        return $this->get(self::CLAIM_PRICE);
     }
 
     /**
@@ -197,23 +196,6 @@ class Order extends Jwt
     public function getPackageId()
     {
         return $this->get(self::CLAIM_PACKAGE_ID);
-    }
-
-    /**
-     * @param int $value
-     * @return $this|Order
-     */
-    public function setRecurringPrice($value)
-    {
-        return $this->set(self::CLAIM_RECURRING_PRICE, intval($value));
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getRecurringPrice()
-    {
-        return $this->get(self::CLAIM_RECURRING_PRICE);
     }
 
     /**
