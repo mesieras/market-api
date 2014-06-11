@@ -2,6 +2,7 @@
 
 namespace Appsco\Market\Api;
 
+use Appsco\Market\Api\Model\Notification;
 use Appsco\Market\Api\Model\Order;
 use BWC\Component\Jwe\Algorithm;
 use BWC\Component\Jwe\Encoder;
@@ -74,13 +75,13 @@ class MarketClient
     }
 
     /**
-     * @param Order $order
+     * @param Jwt $jwt
      */
-    public function timestampJwt(Order $order)
+    public function timestampJwt(Jwt $jwt)
     {
-        $order->setIssuer($this->issuer);
-        $order->setIssuedAt(time());
-        $order->setJwtId(sha1(uniqid(mt_rand(), true)));
+        $jwt->setIssuer($this->issuer);
+        $jwt->setIssuedAt(time());
+        $jwt->setJwtId(sha1(uniqid(mt_rand(), true)));
     }
 
 
@@ -100,6 +101,31 @@ class MarketClient
     public function getRedirectResponse($token)
     {
         return new RedirectResponse(sprintf("%s?jwt=%s", $this->targetUrl, $token));
+    }
+
+
+    /**
+     * @param string $jwtToken
+     * @return \BWC\Component\Jwe\Jose
+     */
+    public function receiveNotification($jwtToken)
+    {
+        $notification = $this->encoder->decode($jwtToken, 'Appsco\Market\Api\Model\Notification');
+
+        return $notification;
+    }
+
+    /**
+     * @param Notification $notification
+     * @return string
+     */
+    public function notificationChallengeReply(Notification $notification)
+    {
+        $result = new Notification();
+        $result->setChallenge($notification->getChallenge());
+        $this->timestampJwt($result);
+        $token = $this->getJwtToken($result);
+        return $token;
     }
 
 }
