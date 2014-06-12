@@ -9,6 +9,8 @@ class Order extends Jwt
     const DURATION_UNIT_DAY = 'day';
     const DURATION_UNIT_MONTH = 'month';
 
+    const CLAIM_TEST = 'test';
+    const CLAIM_CANCEL = 'cancel';
     const CLAIM_PACKAGE_ID = 'package_id';
     const CLAIM_APP_ID = 'app_id';
     const CLAIM_APP_TITLE = 'app_title';
@@ -38,6 +40,41 @@ class Order extends Jwt
         return new Order(array(), array(self::CLAIM_PACKAGE_ID => intval($packageId)));
     }
 
+
+
+    /**
+     * @param bool $value
+     * @return $this|Order
+     */
+    public function setTest($value)
+    {
+        return $this->set(self::CLAIM_TEST, (bool)$value);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getTest()
+    {
+        return $this->get(self::CLAIM_TEST);
+    }
+
+    /**
+     * @param bool $value
+     * @return $this|Order
+     */
+    public function setCancel($value)
+    {
+        return $this->set(self::CLAIM_CANCEL, (bool)$value);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getCancel()
+    {
+        return $this->get(self::CLAIM_CANCEL);
+    }
 
     /**
      * @param string $value

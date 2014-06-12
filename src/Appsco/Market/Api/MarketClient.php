@@ -71,6 +71,7 @@ class MarketClient
     {
         $this->timestampJwt($order);
         $token = $this->getJwtToken($order);
+
         return $this->getRedirectResponse($token);
     }
 
@@ -103,6 +104,33 @@ class MarketClient
         return new RedirectResponse(sprintf("%s?jwt=%s", $this->targetUrl, $token));
     }
 
+    /**
+     * @param int $appId
+     * @return RedirectResponse
+     */
+    public function getCancelSubscriptionToken($appId)
+    {
+        $order = new Order();
+        $order
+            ->setAppId($appId)
+            ->setCancel(true)
+        ;
+        $this->timestampJwt($order);
+        $token = $this->getJwtToken($order);
+
+        return $token;
+   }
+
+    /**
+     * @param int $appId
+     * @return RedirectResponse
+     */
+    public function cancelSubscription($appId)
+    {
+        $token = $this->getCancelSubscriptionToken($appId);
+
+        return $this->getRedirectResponse($token);
+    }
 
     /**
      * @param string $jwtToken
