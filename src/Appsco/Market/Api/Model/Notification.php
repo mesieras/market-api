@@ -24,20 +24,23 @@ class Notification extends Jwt
     const KIND_SUBSCRIPTION_WENT_PAST_DUE = 'subscription_went_past_due';
 
 
-
     /**
      * @param string $kind
      * @param string $orderId
      * @param int $appId
+     * @param int $packageId
+     * @param int $ownerId
      * @return \Appsco\Market\Api\Model\Notification
      */
-    public static function create($kind, $orderId, $appId)
+    public static function create($kind, $orderId, $appId, $packageId, $ownerId)
     {
         $result = new Notification();
         $result
             ->setAppId($appId)
             ->setKind($kind)
             ->setOrderId($orderId)
+            ->setPackageId($packageId)
+            ->setOwnerId($ownerId)
         ;
 
         return $result;
