@@ -9,6 +9,8 @@ class Notification extends Jwt
     const CLAIM_KIND = 'kind';
     const CLAIM_ORDER_ID = 'order_id';
     const CLAIM_APP_ID = 'app_id';
+    const CLAIM_PACKAGE_ID = 'package_id';
+    const CLAIM_OWNER_ID = 'owner_id';
     const CLAIM_CHALLENGE = 'challenge';
 
     const KIND_ORDER_PROCESSED = 'order_processed';
@@ -93,6 +95,39 @@ class Notification extends Jwt
         return $this->get(self::CLAIM_ORDER_ID);
     }
 
+    /**
+     * @param int $packageId
+     * @return $this|Notification
+     */
+    public function setPackageId($packageId)
+    {
+        return $this->set(self::CLAIM_PACKAGE_ID, $packageId);
+    }
+
+    /**
+     * @return int
+     */
+    public function getPackageId()
+    {
+        return $this->get(self::CLAIM_PACKAGE_ID);
+    }
+
+    /**
+     * @param string $ownerId
+     * @return $this|Notification
+     */
+    public function setOwnerId($ownerId)
+    {
+        return $this->set(self::CLAIM_OWNER_ID, $ownerId);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOwnerId()
+    {
+        return $this->get(self::CLAIM_OWNER_ID);
+    }
 
     /**
      * @param string $challenge
