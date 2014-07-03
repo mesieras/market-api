@@ -5,8 +5,7 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
-            "Appsco\\Market\\Api\\Tests\\": "tests/",
-            "Appsco\\Market\\Api\\": "src/"
+            "Appsco\\Market\\ApiBundle\\": "src/"
         }
     }, 
     "require": {
