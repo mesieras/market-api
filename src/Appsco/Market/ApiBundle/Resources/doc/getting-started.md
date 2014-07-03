@@ -12,7 +12,7 @@ Market about purchases and subscription status changes, you should register your
 [Appsco Accounts](https://accounts.dev.appsco.com/). When you register your application you will get a unique
 Client ID and Client Secret.
 
-To make Market orders you will also need a X509 certificate registered in Appsco Accounts and paired private key.
+To make Market orders you will also need a private key and paired X509 certificate registered on your Accounts app.
 Once you have registered your application generate a new key, download the provided private key and save it to
 your project directory.
 
@@ -25,8 +25,8 @@ your company and item. During the item registration in the Issuer field enter Ap
 Callback URL enter the url of your application where you will receive Market notifications.
 
 
-Installation
-============
+Download appsco/market-api with composer
+----------------------------------------
 
 Add `appsco/market-api` to your composer.json requirements:
 
@@ -43,112 +43,43 @@ Check `appsco/market-api` [releases](https://github.com/Appsco/market-api/releas
 Run `composer update appsco/market-api` command to download the component to your vendor directory.
 
 
-Usage
-=====
+Appsco Accounts setup
+---------------------
 
-Common setup
-------------
-
-``` yaml
-# app/config/parameters.yml
-my_key: 'file://%kernel.root_dir%/../src/AcmeBundle/Resources/5rr3ks8hyi88cos88kw4s8os4k0cw88kkokow000cskwcsko4o.pem'
-my_issuer: '5rr3ks8hyi88cos88kw4s8os4k0cw88kkokow000cskwcsko4o'
-market_url: 'https://market.dev.appsco.com/customer/order/receive'
-market_certificate: 'file://%kernel.root_dir%/../src/AcmeBundle/Resources/appsco-market.crt'
-```
+The Appsco Market API bundle depends on the [Appsco Accounts API Bundle](https://github.com/Appsco/accounts-api) for
+market order notification validation. It is automatically downloaded by composer together with appsco/market-api.
+So, first you have to setup the `appsco/accounts-api` bundle as specified in
+[documentation](https://github.com/Appsco/accounts-api/blob/master/src/Appsco/Accounts/ApiBundle/Resources/doc/getting-started.md)
 
 
-``` yaml
-# config.yml
-services:
-    acme_market_client.jwt_encoder:
-        class: BWC\Component\Jwe\Encoder
-
-    acme_market_client.market_client:
-        class: Appsco\Market\Api\MarketClient
-        arguments:
-            - @acme_market_client.jwt_encoder
-            - %market_key%
-            - %market_issuer%
-            - %market_url%
-```
-
-Make an order
+Configuration
 -------------
 
-``` php
-<?php
-
-namespace Acme\MarketClientBundle\Controller;
-
-use Appsco\Market\Api\Model\Order;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-class DefaultController extends Controller
-{
-    public function indexAction()
-    {
-        $order = new Order();
-        $order->setPackageId(123); // the item package you are making order for
-        return $this->getMarketClient()->makeOrder($order);
-    }
+Now you can configure `appsco/market-api`, and tell to the bundle what are your Appsco Accounts
+Client ID and private key of certificate registered in your app registration info.
 
 
-    /**
-     * @return \Appsco\Market\Api\MarketClient
-     */
-    private function getMarketClient()
-    {
-        return $this->get('acme_market_client.market_client');
-    }
-}
+``` yaml
+# app/config/config.yml
+appsco_market_api:
+    private_key:
+        file: 'file://%kernel.root_dir%/Resources/your_private_key.pem'
+    client_id: your_app_appsco_accounts_client_id
+    notification:
+        appsco: true
 ```
 
-The Market Client will make an order JWT sign it with your private key and return a `RedirectResponse` with
-Market order receive URL.
+For configuration details check [configuration reference](configuration.md)
 
 
-Receive a Market notification
------------------------------
+Next steps
+----------
 
-``` php
-<?php
+At this point you are ready to make Market orders, receive and validate Market notifications, except JTI validation.
+Check for details how to make your own [JTI validation](jti.md).
 
-namespace Acme\MarketClientBundle\Controller;
+Next steps
+ * [Order requests](order.md)
+ * [Notifications](notification.md)
+ * [JTI validation](jti.md)
 
-use Appsco\Market\Api\Model\Order;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-class DefaultController extends Controller
-{
-    public function notificationAction(Request $request)
-    {
-        $jwtToken = $request->request->get('jwt');
-        $notificationJwt = $this->getJwtEncoder()->decode($jwtToken, 'Appsco\Market\Api\Model\Notification');
-
-        // do some action based on the notification data
-
-        return new Response('');
-    }
-
-
-    /**
-     * @return \Appsco\Market\Api\MarketClient
-     */
-    private function getMarketClient()
-    {
-        return $this->get('acme_market_client.market_client');
-    }
-
-    /**
-     * @return \BWC\Component\Jwe\Encoder
-     */
-    private function getJwtEncoder()
-    {
-        return $this->get('acme_market_client.jwt_encoder');
-    }
-
-}
-```
