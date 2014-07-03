@@ -27,7 +27,15 @@ class Configuration implements ConfigurationInterface
                 ->defaultValue('https://market.dev.appsco.com/customer/order/receive')
                 ->cannotBeEmpty()
             ->end()
-            ->scalarNode('appsco_client')->defaultValue(null)->end()
+            ->arrayNode('notification')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->booleanNode('appsco')->defaultValue(false)->end()
+                    ->arrayNode('validators')
+                        ->prototype('scalar')->end()
+                    ->end()
+                ->end()
+            ->end()
             ->end()
         ;
 

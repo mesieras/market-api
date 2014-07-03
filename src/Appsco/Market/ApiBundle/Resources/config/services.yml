@@ -7,7 +7,7 @@ services:
         class: Appsco\Market\ApiBundle\Client\MarketClient
         arguments:
             - @appsco_market_api.jwt_encoder
-            - @appsco_market_api.private_key_provider.file.abstract
+            - @appsco_market_api.private_key_provider.null
             - %appsco_market_api.client_id%
             - %appsco_market_api.market_url%
 
@@ -16,7 +16,7 @@ services:
         calls:
             - [ addValidator, [@appsco_market_api.notification.validator.issuer] ]
             - [ addValidator, [@appsco_market_api.notification.validator.issued_at] ]
-            - [ addValidator, [@appsco_market_api.notification.validator.certificate] ]
+#            - [ addValidator, [@appsco_market_api.notification.validator.certificate] ]
 
     # PRIVATE -------------------------------------------
 
@@ -30,6 +30,9 @@ services:
         public: false
         abstract: true
 
+    appsco_market_api.private_key_provider.null:
+        class: Appsco\Market\ApiBundle\Service\PrivateKeyProvider\NullPrivateKeyProvider
+        public: false
 
     # NOTIFICATION VALIDATORS -------------------------------------
 
@@ -41,9 +44,11 @@ services:
         class: Appsco\Market\ApiBundle\Service\Notification\Validator\IssuedAt\IssuedAtValidator
         public: false
 
-    appsco_market_api.notification.validator.certificate:
+    appsco_market_api.notification.validator.certificate.abstract:
         class: Appsco\Market\ApiBundle\Service\Notification\Validator\Certificate\AppscoCertificateValidator
         arguments:
             - @appsco_accounts_api.client
             - @appsco_market_api.jwt_encoder
         public: false
+        abstract: true
+
