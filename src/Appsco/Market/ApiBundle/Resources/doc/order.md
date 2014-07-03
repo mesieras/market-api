@@ -50,7 +50,7 @@ Order like this inherits all attributes as they are defined in the specified pac
 ``` php
 class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $order = new Order();
         $order->setPackageId(MARKET_PACKAGE_ID);
@@ -84,7 +84,7 @@ be taken from the order request.
 ``` php
 class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $order = new Order();
         $order->setPackageId(MARKET_PACKAGE_ID);
@@ -120,7 +120,7 @@ are those that are different then on the package - that you wish to override for
 ``` php
 class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $order = new Order();
         $order->setPackageId(MARKET_PACKAGE_ID);
@@ -151,7 +151,7 @@ To cancel an existing subscription you have to specify the Market Application ID
 ``` php
 class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $order = new Order();
         $order->setAppId(MARKET_APP_ID);
@@ -180,7 +180,7 @@ To change the price of the existing app subscription, you should specify the Mar
 ``` php
 class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $order = new Order();
         $order->setAppId(MARKET_APP_ID);
