@@ -1,0 +1,49 @@
+parameters:
+    appsco_market_api.client_id: ~
+    appsco_market_api.market_url: ~
+
+services:
+    appsco_market_api.client:
+        class: Appsco\Market\ApiBundle\Client\MarketClient
+        arguments:
+            - @appsco_market_api.jwt_encoder
+            - @appsco_market_api.private_key_provider.file.abstract
+            - %appsco_market_api.client_id%
+            - %appsco_market_api.market_url%
+
+    appsco_market_api.notification.validator:
+        class: Appsco\Market\ApiBundle\Service\Notification\Validator\CompositeValidator
+        calls:
+            - [ addValidator, [@appsco_market_api.notification.validator.issuer] ]
+            - [ addValidator, [@appsco_market_api.notification.validator.issued_at] ]
+            - [ addValidator, [@appsco_market_api.notification.validator.certificate] ]
+
+    # PRIVATE -------------------------------------------
+
+    appsco_market_api.jwt_encoder:
+        class: BWC\Component\Jwe\Encoder
+        public: false
+
+    appsco_market_api.private_key_provider.file.abstract:
+        class: Appsco\Market\ApiBundle\Service\PrivateKeyProvider\PrivateKeyFileProvider
+        arguments: [~]
+        public: false
+        abstract: true
+
+
+    # NOTIFICATION VALIDATORS -------------------------------------
+
+    appsco_market_api.notification.validator.issuer:
+        class: Appsco\Market\ApiBundle\Service\Notification\Validator\Issuer\SimpleIssuerValidator
+        public: false
+
+    appsco_market_api.notification.validator.issued_at:
+        class: Appsco\Market\ApiBundle\Service\Notification\Validator\IssuedAt\IssuedAtValidator
+        public: false
+
+    appsco_market_api.notification.validator.certificate:
+        class: Appsco\Market\ApiBundle\Service\Notification\Validator\Certificate\AppscoCertificateValidator
+        arguments:
+            - @appsco_accounts_api.client
+            - @appsco_market_api.jwt_encoder
+        public: false

@@ -1,6 +1,6 @@
 <?php
 
-namespace Appsco\Market\Api\Model;
+namespace Appsco\Market\ApiBundle\Model;
 
 use BWC\Component\Jwe\Jwt;
 

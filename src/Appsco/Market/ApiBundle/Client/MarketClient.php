@@ -1,13 +1,13 @@
 <?php
 
-namespace Appsco\Market\Api;
+namespace Appsco\Market\ApiBundle\Client;
 
-use Appsco\Market\Api\Model\Notification;
-use Appsco\Market\Api\Model\Order;
+use Appsco\Market\ApiBundle\Model\Notification;
+use Appsco\Market\ApiBundle\Model\Order;
+use Appsco\Market\ApiBundle\Service\PrivateKeyProvider\PrivateKeyProviderInterface;
 use BWC\Component\Jwe\Algorithm;
 use BWC\Component\Jwe\Encoder;
 use BWC\Component\Jwe\Jwt;
-use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class MarketClient
@@ -15,8 +15,8 @@ class MarketClient
     /** @var  Encoder */
     protected $encoder;
 
-    /** @var  string */
-    protected $key;
+    /** @var  PrivateKeyProviderInterface */
+    protected $keyProvider;
 
     /** @var  string */
     protected $algorithm = Algorithm::RS256;
@@ -30,14 +30,14 @@ class MarketClient
 
     /**
      * @param \BWC\Component\Jwe\Encoder $encoder
-     * @param string $key
+     * @param PrivateKeyProviderInterface $keyProvider
      * @param string $issuer
      * @param string $targetUrl
      */
-    public function __construct(Encoder $encoder, $key, $issuer, $targetUrl)
+    public function __construct(Encoder $encoder, PrivateKeyProviderInterface $keyProvider, $issuer, $targetUrl)
     {
         $this->encoder = $encoder;
-        $this->key = $key;
+        $this->keyProvider = $keyProvider;
         $this->issuer = $issuer;
         $this->targetUrl = $targetUrl;
     }
@@ -61,6 +61,44 @@ class MarketClient
     {
         return $this->algorithm;
     }
+
+    /**
+     * @param string $targetUrl
+     * @return $this|MarketClient
+     */
+    public function setTargetUrl($targetUrl)
+    {
+        $this->targetUrl = $targetUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTargetUrl()
+    {
+        return $this->targetUrl;
+    }
+
+    /**
+     * @param string $issuer
+     * @return $this|MarketClient
+     */
+    public function setIssuer($issuer)
+    {
+        $this->issuer = $issuer;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIssuer()
+    {
+        return $this->issuer;
+    }
+
+
 
 
     /**
@@ -92,7 +130,7 @@ class MarketClient
      */
     public function getJwtToken(Jwt $jwt)
     {
-        return $this->encoder->encode($jwt, $this->key, $this->algorithm);
+        return $this->encoder->encode($jwt, $this->keyProvider->get(), $this->algorithm);
     }
 
     /**

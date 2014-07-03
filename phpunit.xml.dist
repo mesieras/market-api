@@ -15,7 +15,7 @@
 >
     <testsuites>
         <testsuite name="AppscoMarket">
-            <directory suffix="Test.php">./tests/</directory>
+            <directory suffix="Test.php">./src/Appsco/Market/ApiBundle/Tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>
