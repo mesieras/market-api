@@ -1,6 +1,7 @@
 Appsco Market API Documentation
 ===============================
 
+ * [Introduction to Appsco Market](introduction.md)
  * [Getting Started](getting-started.md)
  * [Order Request](order.md)
  * [Receiving Market Notifications](notification.md)
