@@ -120,7 +120,10 @@ class MarketClient
     {
         $jwt->setIssuer($this->issuer);
         $jwt->setIssuedAt(time());
-        $jwt->setJwtId(sha1(uniqid(mt_rand(), true)));
+
+        if(null === $jwt->getJwtId()){
+            $jwt->setJwtId(sha1(uniqid(mt_rand(), true)));
+        }
     }
 
 
@@ -176,7 +179,7 @@ class MarketClient
      */
     public function receiveNotification($jwtToken)
     {
-        $notification = $this->encoder->decode($jwtToken, 'Appsco\Market\Api\Model\Notification');
+        $notification = $this->encoder->decode($jwtToken, 'Appsco\Market\ApiBundle\Model\Notification');
 
         return $notification;
     }
