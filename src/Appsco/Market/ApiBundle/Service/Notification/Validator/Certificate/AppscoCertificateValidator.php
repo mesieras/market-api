@@ -18,12 +18,12 @@ class AppscoCertificateValidator implements NotificationValidatorInterface
 
 
     /**
-     * @param AppscoClient $accountsClient
+     * @param AppscoClient $appscoClient
      * @param \BWC\Component\Jwe\Encoder $jwtEncoder
      */
-    public function __construct(AppscoClient $accountsClient, Encoder $jwtEncoder)
+    public function __construct(AppscoClient $appscoClient, Encoder $jwtEncoder)
     {
-        $this->client = $accountsClient;
+        $this->client = $appscoClient;
         $this->jwtEncoder = $jwtEncoder;
     }
 
@@ -39,7 +39,7 @@ class AppscoCertificateValidator implements NotificationValidatorInterface
 
         if (0 == count($certificateList->getCertificates())) {
             throw new InvalidNotificationException(sprintf(
-                "Issuer '%s' has no Appsco Accounts certificates",
+                "Issuer '%s' has no Appsco certificates",
                 $notification->getIssuer()
             ));
         }

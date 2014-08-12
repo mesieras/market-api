@@ -47,7 +47,7 @@ services:
     appsco_market_api.notification.validator.certificate.abstract:
         class: Appsco\Market\ApiBundle\Service\Notification\Validator\Certificate\AppscoCertificateValidator
         arguments:
-            - @appsco_accounts_api.client
+            - @appsco_dashboard_api.client
             - @appsco_market_api.jwt_encoder
         public: false
         abstract: true
