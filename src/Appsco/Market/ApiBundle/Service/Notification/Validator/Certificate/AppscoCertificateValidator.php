@@ -2,7 +2,7 @@
 
 namespace Appsco\Market\ApiBundle\Service\Notification\Validator\Certificate;
 
-use Appsco\Accounts\ApiBundle\Client\AccountsClient;
+use Appsco\Dashboard\ApiBundle\Client\AppscoClient;
 use Appsco\Market\ApiBundle\Error\InvalidNotificationException;
 use Appsco\Market\ApiBundle\Model\Notification;
 use Appsco\Market\ApiBundle\Service\Notification\Validator\NotificationValidatorInterface;
@@ -10,20 +10,20 @@ use BWC\Component\Jwe\Encoder;
 
 class AppscoCertificateValidator implements NotificationValidatorInterface
 {
-    /** @var  AccountsClient */
-    protected $accountsClient;
+    /** @var  AppscoClient */
+    protected $client;
 
     /** @var  Encoder */
     protected $jwtEncoder;
 
 
     /**
-     * @param AccountsClient $accountsClient
+     * @param AppscoClient $appscoClient
      * @param \BWC\Component\Jwe\Encoder $jwtEncoder
      */
-    public function __construct(AccountsClient $accountsClient, Encoder $jwtEncoder)
+    public function __construct(AppscoClient $appscoClient, Encoder $jwtEncoder)
     {
-        $this->accountsClient = $accountsClient;
+        $this->client = $appscoClient;
         $this->jwtEncoder = $jwtEncoder;
     }
 
@@ -35,11 +35,11 @@ class AppscoCertificateValidator implements NotificationValidatorInterface
      */
     public function validate(Notification $notification)
     {
-        $certificateList = $this->accountsClient->certificateGet($notification->getIssuer());
+        $certificateList = $this->client->certificateGet($notification->getIssuer());
 
         if (0 == count($certificateList->getCertificates())) {
             throw new InvalidNotificationException(sprintf(
-                "Issuer '%s' has no Appsco Accounts certificates",
+                "Issuer '%s' has no Appsco certificates",
                 $notification->getIssuer()
             ));
         }

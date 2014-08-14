@@ -9,7 +9,7 @@ Minimal configuration
 appsco_market_api:
     private_key:
         file: 'file://%kernel.root_dir%/Resources/your_private_key.pem'
-    client_id: your_app_appsco_accounts_client_id
+    client_id: your_app_appsco_client_id
     notification:
         appsco: true
 ```
@@ -29,14 +29,14 @@ appsco_market_api:
         # location of the pem private key file on local disk
         file: 'file://%kernel.root_dir%/Resources/your_private_key.pem'
 
-    # appsco accounts client_id of your application
-    client_id: your_app_appsco_accounts_client_id
+    # appsco client_id of your application
+    client_id: your_app_appsco_client_id
 
     # appsco market order receive API URL
     market_url: https://market.dev.appsco.com/customer/order/receive
 
     notification:
-        # use appsco accounts API to retrieve notification issuer certificate
+        # use appsco API to retrieve notification issuer certificate
         appsco: true
         # service ids of custom extra notification validators, must implement NotificationValidatorInterface
         validators:

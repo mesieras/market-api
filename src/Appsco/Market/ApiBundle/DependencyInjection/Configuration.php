@@ -13,7 +13,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $root = $treeBuilder->root('appsco_accounts_api');
+        $root = $treeBuilder->root('appsco_market_api');
 
         $root->children()
             ->arrayNode('private_key')
