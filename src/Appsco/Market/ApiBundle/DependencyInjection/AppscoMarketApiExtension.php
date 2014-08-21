@@ -72,8 +72,15 @@ class AppscoMarketApiExtension extends Extension
                 );
             }
         }
+
+        if ($container->hasDefinition('appsco_market_api.notification.validator.issuer')) {
+            $issuerValidator = $container->getDefinition('appsco_market_api.notification.validator.issuer');
+            if (@$config['notification']['issuers']) {
+                foreach ($config['notification']['issuers'] as $issuer) {
+                    $issuerValidator->addMethodCall('addValidIssuer', array($issuer));
+                }
+            }
+        }
     }
 
 }
-
-
