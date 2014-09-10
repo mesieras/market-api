@@ -103,7 +103,7 @@ class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Contr
 {
     public function callbackAction(Request $request)
     {
-        $jwtToken = $request->query->get('jwt');
+        $jwtToken = $request->request->get('jwt');
         $notification = $this->get('appsco_market_api.client')->receiveNotification($jwtToken);
         $this->get('appsco_market_api.notification.validator')->validate($notification);
         $this->jtiValidation($notification); // check if jti is repeated
@@ -127,7 +127,7 @@ class DefaultController extends \Symfony\Bundle\FrameworkBundle\Controller\Contr
 {
     public function callbackAction(Request $request)
     {
-        $jwtToken = $request->query->get('jwt');
+        $jwtToken = $request->request->get('jwt');
         $notification = $this->get('appsco_market_api.client')->receiveNotification($jwtToken);
         $this->get('appsco_market_api.notification.validator')->validate($notification);
         $this->jtiValidation($notification); // check if jti is repeated
